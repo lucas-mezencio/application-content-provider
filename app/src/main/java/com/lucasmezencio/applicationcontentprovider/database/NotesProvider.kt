@@ -2,10 +2,20 @@ package com.lucasmezencio.applicationcontentprovider.database
 
 import android.content.ContentProvider
 import android.content.ContentValues
+import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
 
 class NotesProvider : ContentProvider() {
+
+    private lateinit var mUriMatcher: UriMatcher
+    // inicializa tudo no cont prov: inicializa um db, por exemplo
+    override fun onCreate(): Boolean {
+        mUriMatcher = UriMatcher(UriMatcher.NO_MATCH)
+        mUriMatcher.addURI(AUTHORITY, "notes", NOTES)
+        mUriMatcher.addURI(AUTHORITY, "notes/#", NOTES_BY_ID)
+        return true
+    }
 
     // Deleta dados do provider
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
@@ -24,11 +34,6 @@ class NotesProvider : ContentProvider() {
         TODO("Implement this to handle requests to insert a new row.")
     }
 
-    // inicializa tudo no cont prov: inicializa um db, por exemplo
-    override fun onCreate(): Boolean {
-        TODO("Implement this to initialize your content provider on startup.")
-    }
-
     override fun query(
         uri: Uri, projection: Array<String>?, selection: String?,
         selectionArgs: Array<String>?, sortOrder: String?
@@ -41,5 +46,14 @@ class NotesProvider : ContentProvider() {
         selectionArgs: Array<String>?
     ): Int {
         TODO("Implement this to handle requests to update one or more rows.")
+    }
+
+    companion object {
+        const val AUTHORITY = "com.lucasmezencio.applicationcontentprovider.provider"
+        val BASE_URI = Uri.parse("content://$AUTHORITY")
+        val URI_NOTES = Uri.withAppendedPath(BASE_URI, "notes")
+
+        const val NOTES = 1
+        const val NOTES_BY_ID = 2
     }
 }
